@@ -1,0 +1,136 @@
+using System;
+
+namespace ArQui
+{
+    class Program
+    {
+        static void Main(string[] args)
+        {
+            Console.WriteLine("Arithmetic Quiz\n");
+
+            Random random = new Random();
+            int numQuestions = random.Next(5, 16);
+            int correctAns = 0;
+
+            Quiz quiz = new Quiz();
+
+            for (int i = 1; i <= numQuestions; i++)
+            {
+                string questionText = quiz.GenerateQuestion();
+                Console.Write($"Question {i}: {questionText}");
+                int userAns;
+                if (int.TryParse(Console.ReadLine(), out userAns))
+                {
+                    if (quiz.CheckAns(userAns))
+                    {
+                        Console.WriteLine("Correct!\n");
+                        correctAns++;
+                    }
+                    else
+                    {
+                        Console.WriteLine($"Incorrect! The correct answer is {quiz.correctAns}");
+                    }
+                }
+                else
+                {
+                    Console.WriteLine("Invalid input. Please input an integer. \n");
+                }
+            }
+
+            Console.WriteLine("Results:");
+            Console.WriteLine($"Total Correct Answers: {correctAns}");
+            double percentage = (double)correctAns / numQuestions * 100;
+            Console.WriteLine($"Percentage of Correct Answers: {percentage}%");
+        }
+    }
+
+    class Quiz
+    {
+        private int num1;
+        private int num2;
+        private char ops;
+        public int correctAns;
+        private string? questionText;
+
+        public int CorrectAnswer
+        {
+            get { return correctAns; }
+        }
+
+        public string GenerateQuestion()
+        {
+            Random random = new Random();
+            Math math = new Math();
+            math.num1 = random.Next(1, 101);
+            math.num2 = random.Next(1, 101);
+            char[] operators = { '+', '-', '*', '/' };
+            math.ops = operators[random.Next(0, 4)];
+
+            questionText = $"What is {math.num1} {math.ops} {math.num2}? ";
+
+            if (math.ops == '+')
+            {
+                correctAns = math.num1 + math.num2;
+            }
+            else if (math.ops == '-')
+            {
+                correctAns = math.num1 - math.num2;
+            }
+            else if (math.ops == '*')
+            {
+                correctAns = math.num1 * math.num2;
+            }
+            else if (math.ops == '/')
+            {
+                correctAns = ForDivision();
+            }
+            else throw new Exception("Invalid Operator");
+
+            return questionText;
+        }
+
+        public int ForDivision()
+        {
+            int remainder;
+            Random random = new Random();
+            Math math = new Math();
+            math.ops =  '/' ;
+
+            do
+            {
+                math.num1 = random.Next(1, 101);
+                math.num2 = random.Next(1, 101);
+
+
+                questionText = $"What is {math.num1} {math.ops} {math.num2}? ";
+
+                if (math.num1 < math.num2)
+                {
+                    int temp = math.num1;
+                    math.num1 = math.num2;
+                    math.num2 = temp;
+                }
+
+                remainder = math.num1 % math.num2;
+
+                correctAns = math.num1 / math.num2;
+            }
+            while (remainder != 0);
+
+            return correctAns;
+        }
+
+
+        public bool CheckAns (int userAns)
+        {
+            return userAns == correctAns;
+        }
+    }
+
+    public class Math
+    {
+        public int num1 { get; set; }
+        public int num2 { get; set; }
+        public char ops { get; set; }
+    }
+}
